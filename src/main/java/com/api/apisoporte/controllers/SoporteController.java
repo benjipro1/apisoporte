@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api/soporte")
 public class SoporteController {
@@ -39,4 +40,26 @@ public class SoporteController {
         soporteServices.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/hateoas/{id}")
+    public SoporteDTO obtenerHateoas(@PathVariable Integer id) {
+        SoporteDTO dto = soporteServices.buscar(id);
+        dto.add(linkTo(methodOn(SoporteController.class).obtenerHateoas(id)).withSelfRel());
+        dto.add(linkTo(methodOn(SoporteController.class).listarHateoas()).withRel("TODOS"));
+        dto.add(linkTo(methodOn(SoporteController.class).eliminar(id)).withRel("ELIMINAR"));
+        return dto;
+    }
+
+    @GetMapping("/hateoas")
+    public List<SoporteDTO> listarHateoas() {
+        List<SoporteDTO> soportes = soporteServices.listar();
+        for (SoporteDTO dto : soportes) {
+            dto.add(linkTo(methodOn(SoporteController.class).obtenerHateoas(dto.getId())).withSelfRel());
+            dto.add(linkTo(methodOn(SoporteController.class).listarHateoas()).withRel("TODOS"));
+            dto.add(linkTo(methodOn(SoporteController.class).eliminar(dto.getId())).withRel("ELIMINAR"));
+        }
+        return soportes;
+    }
+
+
 }
