@@ -54,9 +54,9 @@ public class SoporteController {
     public List<SoporteDTO> listarHateoas() {
         List<SoporteDTO> soportes = soporteServices.listar();
         for (SoporteDTO dto : soportes) {
-            dto.add(linkTo(methodOn(SoporteController.class).obtenerHateoas(dto.getId())).withSelfRel());
+            dto.add(linkTo(methodOn(SoporteController.class).obtenerHateoas(dto.getIdSoporte())).withSelfRel());
             dto.add(linkTo(methodOn(SoporteController.class).listarHateoas()).withRel("TODOS"));
-            dto.add(linkTo(methodOn(SoporteController.class).eliminar(dto.getId())).withRel("ELIMINAR"));
+            dto.add(linkTo(methodOn(SoporteController.class).eliminar(dto.getIdSoporte())).withRel("ELIMINAR"));
         }
         return soportes;
     }
